@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MPVN BÁO CÁO CÔNG VIỆC</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Segoe UI,Arial,sans-serif;background:#f3f6f9;color:#243447;padding:12px}
+button,select,input,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:1700px;margin:auto}
+.header{background:linear-gradient(135deg,#0b2a4a,#1d527d);color:#fff;padding:15px 20px;border-radius:14px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.header h1{font-size:21px}
+.header-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.header-actions .clock{font-size:14px;font-weight:600;background:rgba(255,255,255,0.15);padding:4px 12px;border-radius:20px;letter-spacing:0.5px}
+.btn{border:0;border-radius:8px;padding:7px 12px;font-weight:600;background:#fff;color:#173a59}
+.btn-primary{background:#173a59;color:#fff}.btn-success{background:#28a745;color:#fff}.btn-danger{background:#dc3545;color:#fff}.btn-info{background:#17a2b8;color:#fff}.btn-warning{background:#ffc107;color:#333}
+.btn-sm{font-size:12px;padding:5px 9px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.stat{background:#fff;border-radius:8px;padding:8px 10px;border-left:4px solid #17a2b8;box-shadow:0 1px 4px #00000008;cursor:pointer;text-align:center;transition:0.2s}
+.stat:hover{background:#f8fafc}
+.stat:nth-child(2){border-color:#ffc107}.stat:nth-child(3){border-color:#28a745}.stat:nth-child(4){border-color:#6f42c1}
+.stat span{font-size:18px;display:block;line-height:1.2}
+.stat b{font-size:20px;display:block;color:#173a59;line-height:1.2}
+.grid{display:grid;grid-template-columns:270px minmax(0,1fr) 220px;gap:10px;align-items:start}
+.card{background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px #0000000a;margin-bottom:14px}
+.card h3{font-size:15px;color:#173a59;border-bottom:2px solid #edf0f2;padding-bottom:8px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.form-group{margin-bottom:9px}.form-group label{display:block;font-size:12px;font-weight:700;color:#4c5965;margin-bottom:3px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:7px 9px;border:1px solid #ccd4dc;border-radius:6px;background:#fff}
+textarea{resize:vertical}
+.task-item{background:#f7f9fb;border-left:3px solid #173a59;border-radius:7px;padding:8px;margin-bottom:6px;display:flex;gap:8px;align-items:center}
+.task-info{flex:1;min-width:0}.task-title{font-size:13px;font-weight:600}.task-meta{font-size:11px;color:#6c757d;margin-top:2px}
+.diff{font-weight:700;font-size:11px;border-radius:5px;padding:2px 7px;display:inline-block}.A{background:#fdebd0;color:#a04000}.B{background:#fef9e7;color:#7d6608}.C{background:#d5f5e3;color:#1a7a3a}.D{background:#d6eaf8;color:#1a5276}
+.filters{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:8px}.filters select{padding:6px 8px;border:1px solid #ccd4dc;border-radius:6px}
+.filter-status{background:#fff3cd}
+.table-wrap{overflow:auto;border:1px solid #e1e6eb;border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:1100px}
+th{position:sticky;top:0;background:#173a59;color:#fff;padding:7px;text-align:left;white-space:nowrap;z-index:2}
+td{padding:7px;border-bottom:1px solid #edf0f2;vertical-align:middle}
+tr{cursor:pointer}
+tr:hover td{background:#f7fafc}
+.task-cell{max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.comment-cell{max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#495057}
+.status-select{padding:4px 6px;border:1px solid #c7d0d8;border-radius:5px;font-size:11px;font-weight:600}
+.status-done{background:#d4edda;color:#155724}.status-working{background:#fff3cd;color:#856404}
+.daily{accent-color:#6f42c1}
+.emp-name{font-weight:700}
+.comment-mini{font-size:11px;color:#495057;line-height:1.35;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px}
+.name-0{color:#1769aa}.name-1{color:#8e44ad}.name-2{color:#16803c}.name-3{color:#c45a00}.name-4{color:#b03060}.name-5{color:#126b7a}.name-6{color:#6b5b00}.name-7{color:#7a3e9d}
+.manager-comment-list{max-height:340px;overflow-y:auto;padding-right:3px}
+.manager-comment-item{border-bottom:1px solid #edf0f2;padding:5px 2px;cursor:pointer;font-size:11px}
+.manager-comment-item:last-child{border-bottom:0}
+.manager-comment-item strong{font-size:11px}
+.manager-comment-item div{font-size:11px;margin-top:1px;line-height:1.25}
+.manager-comment-item .comment-date{font-size:11px;color:#6c757d}
+.goal{padding:7px 0;border-bottom:1px solid #edf0f2;font-size:12px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.goal .goal-text{flex:1;min-width:0;word-break:break-word}
+.goal .goal-meta{font-size:10px;color:#6c757d;margin-left:6px;white-space:nowrap}
+.goal .goal-controls{display:flex;gap:4px;align-items:center;flex-shrink:0}
+.goal .goal-controls label{font-size:10px;display:flex;align-items:center;gap:2px;cursor:pointer}
+.goal .goal-controls input[type="checkbox"]{width:14px;height:14px;cursor:pointer}
+.goal.hidden-goal{opacity:0.5;background:#f5f5f5;border-radius:4px}
+.goal.hidden-goal .goal-text{text-decoration:line-through}
+.goal-editor{border-top:1px solid #edf0f2;margin-top:8px;padding-top:8px}
+.hidden-goals-wrapper{margin-top:6px;border-top:1px dashed #d0d7de;padding-top:6px}
+.hidden-goals-toggle{cursor:pointer;font-size:12px;color:#0b2a4a;font-weight:600;display:inline-block;padding:4px 10px;background:#f0f4f9;border-radius:12px;transition:0.2s}
+.hidden-goals-toggle:hover{background:#e1e8f0}
+.hidden-goals-list{margin-top:6px;padding-left:6px;border-left:2px solid #d0d7de;display:none}
+.hidden-goals-list.open{display:block}
+.hidden-goals-list .goal{opacity:0.6;font-size:11px;padding:5px 0}
+.chart-row{cursor:pointer}.bar{cursor:pointer}.chart-row.selected{outline:2px solid #173a59;border-radius:6px;padding:2px}
+.modal{display:none;position:fixed;inset:0;background:#0008;z-index:1000;align-items:center;justify-content:center;padding:10px}.modal.active{display:flex}
+.modal-box{background:#fff;border-radius:14px;width:650px;max-width:98vw;max-height:94vh;overflow:auto;padding:18px;box-shadow:0 12px 40px #0005;position:relative}
+.modal-full{width:98vw;height:96vh;max-height:96vh}
+.modal-title{font-size:18px;color:#173a59;font-weight:700;margin-bottom:12px}.close{position:absolute;right:12px;top:8px;border:0;background:none;font-size:27px;color:#777}
+.suggest-list{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 12px}.suggest{border:1px solid #ccd4dc;background:#f8fafc;border-radius:20px;padding:6px 10px;font-size:12px;font-weight:600}
+.suggest:hover{background:#eaf4fb}.selected-person{background:#e8f5e9;border:1px solid #8bc58f;padding:9px;border-radius:7px;margin-bottom:10px;font-weight:700}
+.stat-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}.stat-btn{border:0;border-radius:9px;padding:12px;font-weight:800}.stat-btn.A{background:#fdebd0}.stat-btn.B{background:#fef9e7}.stat-btn.C{background:#d5f5e3}.stat-btn.D{background:#d6eaf8}
+.stat-btn.active{outline:3px solid #173a59}
+.chart-row{display:grid;grid-template-columns:150px 1fr 80px;gap:8px;align-items:center;margin:7px 0}.bar{height:22px;background:#edf0f2;border-radius:5px;display:flex;overflow:hidden}.segA{background:#e67e22}.segB{background:#f1c40f}.segC{background:#2ecc71}.segD{background:#3498db}
+.chart-num{font-size:11px;text-align:right;font-weight:700}
+.expand-table{position:fixed!important;right:15px;bottom:15px;z-index:10}
+.toast{position:fixed;bottom:20px;right:20px;background:#173a59;color:#fff;padding:10px 18px;border-radius:8px;opacity:0;transform:translateY(15px);transition:.2s;z-index:3000}.toast.show{opacity:1;transform:none}
+.login{width:340px}
+.small{font-size:11px;color:#6c757d}.empty{text-align:center;color:#888;padding:20px}
+.employee-list{max-height:400px;overflow:auto}
+.employee-list table{font-size:11px;width:100%}
+.employee-list td,.employee-list th{padding:4px 6px;white-space:nowrap}
+.employee-list .emp-name{font-weight:700}
+.employee-add{display:grid;grid-template-columns:1fr 110px;gap:7px}
+.checkbox-line{display:flex;align-items:center;gap:7px;padding:7px;border:1px solid #ccd4dc;border-radius:6px}
+.comment-section{border-top:1px solid #e3e7ea;margin-top:12px;padding-top:12px}
+.manager-edit-section{border-top:1px solid #e3e7ea;margin-top:14px;padding-top:12px;background:#f8fafc;border-radius:8px;padding:12px}
+.manager-edit-header{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;color:#173a59;margin-bottom:7px}
+.manager-edit-section textarea{width:100%;padding:8px 9px;border:1px solid #ccd4dc;border-radius:6px;font-size:13px;background:#fff}
+.permission-badge{font-size:10px;padding:3px 7px;border-radius:10px;background:#e9ecef;color:#6c757d}
+.permission-badge.admin{background:#d4edda;color:#155724}
+.points-row{display:flex;align-items:center;gap:7px}
+.points-row input{width:90px;padding:7px 8px;border:1px solid #ccd4dc;border-radius:6px}
+.manager-points{margin:10px 0 0}
+.score-main{font-weight:800;color:#173a59}
+.score-bonus{font-size:10px;color:#198754;margin-left:3px}
+.no-comment-row td{background:#eaf5ff !important}
+.no-comment-row:hover td{background:#dff0ff !important}
+.points-reason-row{display:grid;grid-template-columns:130px minmax(0,1fr);gap:8px;align-items:end}
+.points-reason-row .form-group{margin-bottom:0}
+.delete-btn{order:0}
+.edit-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #e3e7ea}
+#editManagerComment{margin-top:10px}
+.full-table{height:calc(100% - 45px);overflow:auto}
+.full-table table{min-width:1250px}
+input:disabled, select:disabled, textarea:disabled { opacity:0.6; cursor:not-allowed; }
+.workload-filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.workload-filters label{font-size:12px;font-weight:600;color:#4c5965}
+.workload-filters input[type="date"]{padding:5px 8px;border:1px solid #ccd4dc;border-radius:6px}
+.highlight-comment{background:#fff9e6;border-left:4px solid #f1c40f;padding:8px 12px;border-radius:6px;margin-top:12px}
+.highlight-comment .hc-item{border-bottom:1px solid #f0e6d0;padding:6px 0}
+.highlight-comment .hc-item:last-child{border-bottom:0}
+.highlight-comment .hc-title{font-weight:700;font-size:12px}
+.highlight-comment .hc-meta{font-size:11px;color:#6c757d}
+#highlightComments{max-height:340px;overflow-y:auto}
+@media(max-width:1200px){.grid{grid-template-columns:260px minmax(0,1fr)}.right{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{margin-bottom:0}}
+@media(max-width:800px){body{padding:6px}.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.right{grid-template-columns:1fr}.header{padding:12px}.filters{display:grid;grid-template-columns:1fr 1fr}.filters>*{width:100%}.table-wrap{overflow-x:auto}.modal-box{padding:14px}.chart-row{grid-template-columns:90px 1fr 70px}.stat-buttons{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div id="toast" class="toast"></div>
+<div class="app">
+<header class="header">
+  <h1>📋 MPVN BÁO CÁO CÔNG VIỆC</h1>
+  <div class="header-actions">
+    <span class="clock" id="clock">----/--/-- --:--:--</span>
+    <button class="btn btn-info" onclick="openHelp()">📖 Hướng dẫn</button>
+    <button class="btn" id="loginBtn" onclick="toggleLogin()">🔒 Đăng nhập</button>
+  </div>
+</header>
+
+<div class="grid">
+  <aside>
+    <div style="margin-bottom:14px">
+      <section class="stats">
+        <div class="stat" onclick="quickStatus('Hoàn thành')" title="Hoàn thành"><span>✅</span><b id="doneCount">0</b></div>
+        <div class="stat" onclick="quickStatus('Đang làm')" title="Đang làm"><span>⏳</span><b id="workingCount">0</b></div>
+        <div class="stat" onclick="openEmployees()" title="Nhân viên"><span>👥</span><b id="employeeCount">0</b></div>
+        <div class="stat" onclick="openWorkload()" title="Thống kê khối lượng"><span>📊</span><b>↗</b></div>
+      </section>
+    </div>
+
+    <div class="card">
+      <h3>📝 Nhập báo cáo</h3>
+      <div class="form-group"><label>Nhân viên</label><select id="inputEmployee"></select></div>
+      <div class="form-group"><label>Ngày báo cáo</label><input id="inputDate" type="date"></div>
+      <div class="form-group"><label>Công việc *</label><input id="inputTask" placeholder="Mô tả công việc"></div>
+      <div class="form-group"><label>Comment của nhân viên</label><textarea id="inputEmployeeComment" rows="3" placeholder="Phản hồi / ghi chú của nhân viên"></textarea></div>
+      <label class="checkbox-line"><input class="daily" id="inputDaily" type="checkbox"> 🔄 Công việc hàng ngày</label>
+      <button class="btn btn-primary" style="width:100%;margin-top:9px" onclick="addReport()">📤 Gửi báo cáo</button>
+    </div>
+
+    <div class="card">
+      <h3>📌 Giao việc <span class="small">bấm Nhận để chọn người</span></h3>
+      <div id="assignForm" style="display:none">
+        <div class="form-group"><label>Tên công việc</label><input id="newTask" placeholder="Tên việc"></div>
+        <div class="form-group"><label>Độ khó</label><select id="newDiff">
+          <option value="A (Rất khó)">A - Khó, tự nghiên cứu</option><option value="B (Khó)">B - Cần kỹ năng, tay nghề</option>
+          <option value="C (Trung bình)" selected>C - Mất thời gian, cần tỉ mỉ</option><option value="D (Dễ)">D - Công việc thông thường</option>
+        </select></div>
+        <button class="btn btn-primary btn-sm" onclick="addAssignedTask()">➕ Thêm việc</button>
+      </div>
+      <div id="taskList"></div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="card">
+      <h3>
+        <span>📋 Báo cáo công việc <span class="small" id="rowCount"></span></span>
+        <button class="btn btn-info btn-sm" onclick="openTableFullscreen()">⛶ Phóng to bảng</button>
+      </h3>
+      <div class="filters">
+        <select id="filterEmployee" onchange="renderAll()"><option value="ALL">👤 Tất cả NV</option></select>
+        <select id="filterWeek" onchange="renderAll()"><option value="ALL">📅 Tất cả tuần</option></select>
+        <select id="filterMonth" onchange="renderAll()"><option value="ALL">📅 Tất cả tháng</option></select>
+        <input type="date" id="filterDateFrom" onchange="renderAll()" placeholder="Từ ngày">
+        <input type="date" id="filterDateTo" onchange="renderAll()" placeholder="Đến ngày">
+        <select id="filterStatus" onchange="renderAll()" class="filter-status">
+          <option value="ALL">📌 Tất cả Status</option><option value="Đang làm">⏳ Đang làm</option><option value="Hoàn thành">✅ Hoàn thành</option>
+        </select>
+        <select id="filterDaily" onchange="renderAll()">
+          <option value="ALL">🔄 Cả daily + thường</option><option value="DAILY">🔄 Chỉ daily</option><option value="NODAILY">📋 Không daily</option>
+        </select>
+        <button class="btn btn-warning btn-sm" onclick="clearFilters()">✖ Xóa bộ lọc</button>
+      </div>
+      <div class="table-wrap" id="reportTableWrap">
+        <table>
+          <thead><tr><th>#</th><th>Nhân viên</th><th>Ngày</th><th>Tuần</th><th>Công việc</th><th>Độ khó</th><th>Điểm</th><th>Status</th><th>Daily</th><th>Comment NV</th><th>👤 Comment của người hướng dẫn</th><th>Thao tác</th></tr></thead>
+          <tbody id="reportBody"></tbody>
+        </table>
+      </div>
+      <div class="small" style="text-align:right;margin-top:5px">Có thể sửa tên nhân viên, công việc, Status và Daily trong modal.</div>
+    </div>
+  </main>
+
+  <aside class="right">
+    <div class="card">
+      <h3>🎯 Mục tiêu tuần</h3>
+      <div id="goals"></div>
+      <div id="goalEditor" class="goal-editor" style="display:none">
+        <div class="form-group"><label>Thêm mục tiêu</label><input id="goalInput" placeholder="Nhập mục tiêu tuần"></div>
+        <button class="btn btn-primary btn-sm" onclick="addGoal()">➕ Thêm mục tiêu</button>
+      </div>
+    </div>
+    <div class="card"><h3>💬 Comment của người hướng dẫn</h3><div id="managerComments"></div></div>
+    <div class="card">
+      <h3>⭐ Điểm thưởng nổi bật</h3>
+      <div id="highlightComments"></div>
+    </div>
+  </aside>
+</div>
+</div>
+
+<!-- RECEIVE TASK -->
+<div class="modal" id="receiveModal"><div class="modal-box">
+  <button class="close" onclick="closeModal('receiveModal')">&times;</button>
+  <div class="modal-title">👤 Chọn người nhận việc</div>
+  <div id="receiveTaskInfo" class="selected-person"></div>
+  <div class="small">Gợi ý tất cả tên nhân viên lấy từ dữ liệu cột Nhân viên:</div>
+  <div id="employeeSuggestions" class="suggest-list"></div>
+  <div class="form-group"><label>Người nhận đã chọn</label><input id="receiveEmployee" readonly></div>
+  <div class="employee-add"><input id="newEmployeeName" placeholder="Thêm nhân viên mới"><button class="btn btn-info" onclick="addEmployeeFromReceive()">➕ Thêm</button></div>
+  <div style="text-align:right;margin-top:12px"><button class="btn btn-success" onclick="confirmReceive()">✅ Xác nhận nhận việc</button></div>
+</div></div>
+
+<!-- EDIT -->
+<div class="modal" id="editModal"><div class="modal-box">
+  <button class="close" onclick="closeModal('editModal')">&times;</button>
+  <div class="modal-title">📝 Chỉnh sửa công việc</div>
+  <input type="hidden" id="editId">
+  <div class="form-group"><label>Nhân viên</label><input id="editEmployee"></div>
+  <div class="form-group"><label>Tên công việc</label><input id="editTaskName"></div>
+  <div class="form-group"><label>Ngày</label><input id="editDate" type="date" disabled></div>
+  <div class="form-group"><label>Trạng thái</label><select id="editStatus"><option>Đang làm</option><option>Hoàn thành</option></select></div>
+  <div class="form-group"><label>Độ khó (Chỉ người hướng dẫn được sửa)</label><select id="editDifficulty">
+    <option value="A (Rất khó)">A - Khó, tự nghiên cứu</option>
+    <option value="B (Khó)">B - Cần kỹ năng, tay nghề</option>
+    <option value="C (Trung bình)">C - Mất thời gian, cần tỉ mỉ</option>
+    <option value="D (Dễ)">D - Công việc thông thường</option>
+  </select></div>
+  <div class="points-reason-row">
+    <div class="form-group"><label>⭐ Cộng điểm</label><input id="editBonusPoints" type="number" step="1" min="0" placeholder="0" style="width:100%;padding:7px 8px;border:1px solid #ccd4dc;border-radius:6px"></div>
+    <div class="form-group"><label>Lý do cộng điểm</label><input id="editBonusReason" type="text" placeholder="Ví dụ: Hoàn thành sớm, xử lý tốt, hỗ trợ đồng đội..." style="width:100%;padding:7px 8px;border:1px solid #ccd4dc;border-radius:6px"></div>
+  </div>
+  <label class="checkbox-line"><input id="editDaily" type="checkbox"> 🔄 Công việc hàng ngày</label>
+  <div class="form-group" style="margin-top:10px"><label>💬 Comment phản hồi của nhân viên</label><textarea id="editEmployeeComment" rows="3"></textarea></div>
+  <div class="manager-edit-section">
+    <div class="manager-edit-header"><span>💬 Comment người hướng dẫn</span><span id="managerEditPermission" class="permission-badge"></span></div>
+    <textarea id="editManagerComment" rows="4" placeholder="Nhận xét / hướng dẫn cho nhân viên"></textarea>
+    <div class="small" id="managerCommentHint"></div>
+  </div>
+  <div class="edit-actions">
+    <button type="button" class="btn btn-danger delete-btn" onclick="deleteCurrent()">🗑️ Xóa công việc</button>
+    <div style="display:flex;gap:7px">
+      <button type="button" class="btn" onclick="closeModal('editModal')">Hủy</button>
+      <button type="button" class="btn btn-primary" onclick="saveEdit()">💾 Lưu</button>
+    </div>
+  </div>
+</div></div>
+
+<!-- WORKLOAD -->
+<div class="modal" id="workloadModal"><div class="modal-box">
+  <button class="close" onclick="closeModal('workloadModal')">&times;</button>
+  <div class="modal-title">📊 Thống kê khối lượng công việc</div>
+  <div class="workload-filters">
+    <label>Tuần: <select id="workloadWeek" onchange="renderWorkload()"><option value="ALL">Tất cả</option></select></label>
+    <label>Tháng: <select id="workloadMonth" onchange="renderWorkload()"><option value="ALL">Tất cả</option></select></label>
+    <label>Từ: <input type="date" id="workloadFrom" onchange="renderWorkload()"></label>
+    <label>Đến: <input type="date" id="workloadTo" onchange="renderWorkload()"></label>
+    <button class="btn btn-sm btn-warning" onclick="clearWorkloadFilters()">✖ Xóa</button>
+  </div>
+  <div class="stat-buttons">
+    <button class="stat-btn A" onclick="filterWorkload('A')">A<br><span id="countA">0</span> việc</button>
+    <button class="stat-btn B" onclick="filterWorkload('B')">B<br><span id="countB">0</span> việc</button>
+    <button class="stat-btn C" onclick="filterWorkload('C')">C<br><span id="countC">0</span> việc</button>
+    <button class="stat-btn D" onclick="filterWorkload('D')">D<br><span id="countD">0</span> việc</button>
+  </div>
+  <div id="workloadChart"></div>
+  <div id="workloadDetail" style="margin-top:14px"></div>
+</div></div>
+
+<!-- WORKLOAD DETAIL -->
+<div class="modal" id="workloadDetailModal"><div class="modal-box">
+  <button class="close" onclick="closeModal('workloadDetailModal')">&times;</button>
+  <div class="modal-title" id="workloadDetailTitle"></div>
+  <div class="table-wrap"><table><thead><tr><th>#</th><th>NV</th><th>Ngày</th><th>Công việc</th><th>Độ khó</th><th>Status</th><th>Comment NV</th></tr></thead><tbody id="workloadDetailBody"></tbody></table></div>
+</div></div>
+
+<!-- FULL TABLE -->
+<div class="modal" id="tableModal"><div class="modal-box modal-full">
+  <button class="close" onclick="closeModal('tableModal')">&times;</button>
+  <div class="modal-title">📋 Báo cáo công việc — toàn màn hình</div>
+  <div class="full-table"><table><thead><tr><th>#</th><th>NV</th><th>Ngày</th><th>Tuần</th><th>Công việc</th><th>Độ khó</th><th>Điểm</th><th>Status</th><th>Daily</th><th>Comment NV</th><th>👤 Comment của người hướng dẫn</th><th>Thao tác</th></tr></thead><tbody id="fullReportBody"></tbody></table></div>
+</div></div>
+
+<!-- EMPLOYEES -->
+<div class="modal" id="employeeModal"><div class="modal-box">
+  <button class="close" onclick="closeModal('employeeModal')">&times;</button><div class="modal-title">👥 Danh sách nhân viên</div>
+  <div class="employee-add"><input id="employeeAddName" placeholder="Tên nhân viên mới"><button class="btn btn-info" onclick="addEmployee()">➕ Thêm</button></div>
+  <div id="employeeList" class="employee-list" style="margin-top:10px"></div>
+</div></div>
+
+<!-- LOGIN -->
+<div class="modal" id="loginModal"><div class="modal-box login">
+  <button class="close" onclick="closeModal('loginModal')">&times;</button><div class="modal-title">🔐 Đăng nhập người hướng dẫn</div>
+  <input id="password" type="password" placeholder="Mật khẩu" style="width:100%;padding:8px;border:1px solid #ccd4dc;border-radius:6px">
+  <div id="loginError" class="small" style="color:#dc3545;margin:6px 0"></div><button class="btn btn-primary" style="width:100%" onclick="doLogin()">Đăng nhập</button>
+</div></div>
+
+<!-- HELP -->
+<div class="modal" id="helpModal"><div class="modal-box">
+  <button class="close" onclick="closeModal('helpModal')">&times;</button>
+  <div class="modal-title">📖 Hướng dẫn sử dụng</div>
+  <div style="font-size:13px;line-height:1.7;color:#333">
+    <p><b>Chào mừng bạn đến với ứng dụng quản lý báo cáo công việc MPVN!</b></p>
+    <ul style="padding-left:20px;margin:10px 0">
+      <li><b>Nhập báo cáo:</b> Chọn nhân viên, ngày, nhập mô tả công việc và comment (nếu có). Đánh dấu "Công việc hàng ngày" nếu là việc lặp lại. Nhấn "Gửi báo cáo" để lưu.</li>
+      <li><b>Giao việc:</b> Người hướng dẫn có thể thêm công việc vào danh sách chờ. Nhân viên bấm "Nhận" để chọn người thực hiện, hệ thống sẽ tự động tạo báo cáo tương ứng.</li>
+      <li><b>Bảng báo cáo:</b> Hiển thị tất cả công việc đã báo cáo. Bạn có thể lọc theo nhân viên, tuần, tháng, khoảng ngày, trạng thái, loại daily. Nhấn vào hàng để chỉnh sửa chi tiết.</li>
+      <li><b>Chỉnh sửa:</b> Trong modal chỉnh sửa, bạn có thể thay đổi tên nhân viên, tên công việc, trạng thái, đánh dấu daily, và sửa comment nhân viên. Độ khó, comment người hướng dẫn và điểm thưởng chỉ dành cho người hướng dẫn chỉnh sửa.</li>
+      <li><b>Thống kê khối lượng:</b> Xem số lượng công việc theo độ khó (A/B/C/D) và biểu đồ phân bổ theo nhân viên. Bấm vào thanh màu để lọc chi tiết.</li>
+      <li><b>Mục tiêu tuần:</b> Người hướng dẫn có thể thêm, xóa, ẩn/hiện mục tiêu. Các mục tiêu đang hiện được hiển thị bình thường, mục tiêu bị ẩn được thu gọn trong phần "-".</li>
+      <li><b>Comment của người hướng dẫn:</b> Hiển thị tất cả nhận xét của người hướng dẫn, bấm vào để chỉnh sửa.</li>
+      <li><b>Điểm thưởng nổi bật:</b> Liệt kê các công việc được cộng điểm, sắp xếp theo thời gian mới nhất.</li>
+    </ul>
+    <p><i>Lưu ý: Dữ liệu được lưu trên trình duyệt của bạn (localStorage).</i></p>
+  </div>
+</div></div>
+
+<script>
+const ADMIN_PASSWORD='admin123';
+let loggedIn=false, reports=[], assignedTasks=[], employees=[], goals=[];
+let receivingTaskId=null;
+
+const SAMPLE_REPORTS=[
+{id:1,employee:'Phạm Thị Hằng',date:'10/06/2025',task:'Đo nhiệt độ mô hàn',difficulty:'C (Trung bình)',status:'Hoàn thành',isDaily:true,employeeComment:'Đã kiểm tra đầy đủ.',managerComment:'Thực hiện đúng quy trình.',bonusPoints:2,bonusReason:'Hoàn thành tốt và đúng quy trình.'},
+{id:2,employee:'Phạm Thị Hằng',date:'10/06/2025',task:'Đóng nhập mẫu Hasbro',difficulty:'C (Trung bình)',status:'Hoàn thành',isDaily:false,employeeComment:'Mẫu đã bàn giao.',managerComment:'Chất lượng đạt yêu cầu.',bonusPoints:1,bonusReason:'Chủ động hoàn thành công việc.'},
+{id:3,employee:'Vũ Tuấn Anh',date:'11/06/2025',task:'Đo lực súng',difficulty:'B (Khó)',status:'Hoàn thành',isDaily:false,employeeComment:'Đã đo 3 lần.',managerComment:'Kết quả tốt, cần tăng tốc.',bonusPoints:2,bonusReason:'Hoàn thành tốt và đúng quy trình.'},
+{id:4,employee:'Phạm Văn Mạnh',date:'11/06/2025',task:'Sửa tay hàn',difficulty:'B (Khó)',status:'Đang làm',isDaily:false,employeeComment:'Đang chờ linh kiện.',managerComment:'Theo dõi tiến độ.',bonusPoints:0,bonusReason:''},
+{id:5,employee:'Lê Hồng Quang',date:'12/06/2025',task:'Cấp phát, vệ sinh jig',difficulty:'C (Trung bình)',status:'Hoàn thành',isDaily:false,employeeComment:'Đã vệ sinh xong.',managerComment:'Tốt.',bonusPoints:1,bonusReason:'Chủ động hoàn thành công việc.'},
+{id:6,employee:'Nguyễn Văn An',date:'13/06/2025',task:'Vệ sinh máy móc',difficulty:'D (Dễ)',status:'Hoàn thành',isDaily:false,employeeComment:'Đã hoàn thành.',managerComment:'Đúng yêu cầu.',bonusPoints:0,bonusReason:''},
+{id:7,employee:'Trần Thị Bảo',date:'14/06/2025',task:'Sửa chữa bảng mạch',difficulty:'A (Rất khó)',status:'Hoàn thành',isDaily:false,employeeComment:'Đã xử lý lỗi.',managerComment:'Giải quyết triệt để, rất tốt.',bonusPoints:4,bonusReason:'Xử lý lỗi khó, kết quả tốt.'},
+{id:8,employee:'Lê Văn Cường',date:'15/06/2025',task:'Nâng cấp hệ thống',difficulty:'A (Rất khó)',status:'Đang làm',isDaily:false,employeeComment:'Đang test.',managerComment:'Ưu tiên hoàn thành trong tuần.',bonusPoints:0,bonusReason:''},
+{id:9,employee:'Nguyễn Thị Dung',date:'16/06/2025',task:'Kiểm tra chất lượng',difficulty:'C (Trung bình)',status:'Hoàn thành',isDaily:false,employeeComment:'Không phát hiện NG.',managerComment:'Đạt.',bonusPoints:1,bonusReason:'Chủ động hoàn thành công việc.'},
+{id:10,employee:'Phạm Văn Em',date:'16/06/2025',task:'Vệ sinh thiết bị',difficulty:'D (Dễ)',status:'Hoàn thành',isDaily:false,employeeComment:'Đã vệ sinh.',managerComment:'Tốt.',bonusPoints:0,bonusReason:''},
+{id:11,employee:'Phạm Văn Mạnh',date:'17/06/2025',task:'Cập nhật tần suất',difficulty:'D (Dễ)',status:'Hoàn thành',isDaily:false,employeeComment:'Đã cập nhật file.',managerComment:'Cảm ơn.',bonusPoints:0,bonusReason:''},
+{id:12,employee:'Vũ Tuấn Anh',date:'17/06/2025',task:'Sửa thiết bị NG',difficulty:'A (Rất khó)',status:'Đang làm',isDaily:false,employeeComment:'Chờ linh kiện.',managerComment:'Cập nhật hằng ngày.',bonusPoints:0,bonusReason:''}
+];
+const SAMPLE_TASKS=[
+{id:101,task:'Kiểm tra hệ thống làm mát',forEmployee:'Vũ Tuấn Anh',difficulty:'B (Khó)'},
+{id:102,task:'Vệ sinh máy dập số 3',forEmployee:'Phạm Văn Mạnh',difficulty:'D (Dễ)'},
+{id:103,task:'Cập nhật phần mềm máy đo',forEmployee:'Nguyễn Văn An',difficulty:'C (Trung bình)'},
+{id:104,task:'Sửa chữa máy hàn số 5',forEmployee:'Trần Thị Bảo',difficulty:'A (Rất khó)'}
+];
+const SAMPLE_GOALS=[
+  {text:'Hoàn thành 100% công việc sửa chữa', createdAt:'2025-06-01T08:00:00.000Z', visible:true},
+  {text:'Giảm thời gian bảo trì', createdAt:'2025-06-02T09:30:00.000Z', visible:true},
+  {text:'Thực hiện ít nhất 2 cải tiến quy trình', createdAt:'2025-06-03T10:15:00.000Z', visible:false}
+];
+
+function updateClock() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const mins = String(now.getMinutes()).padStart(2, '0');
+  const secs = String(now.getSeconds()).padStart(2, '0');
+  document.getElementById('clock').textContent = `${year}-${month}-${day} ${hours}:${mins}:${secs}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+function clone(x){return JSON.parse(JSON.stringify(x))}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function keyDiff(d){return d?d.charAt(0):'?'}
+function score(r){return ({A:20,B:15,C:10,D:5}[keyDiff(r.difficulty)]||0)+(Number(r.bonusPoints)||0)}
+function week(d){let p=d.split('/'),dt=new Date(+p[2],+p[1]-1,+p[0]),start=new Date(dt.getFullYear(),0,1);return dt.getFullYear()+'-W'+String(Math.ceil((((dt-start)/86400000)+start.getDay()+1)/7)).padStart(2,'0')}
+function month(d){let p=d.split('/');return p[2]+'-'+p[1]}
+function dateInput(d){let p=d.split('/');return p[2]+'-'+p[1]+'-'+p[0]}
+function todayInput(){let d=new Date();return d.toISOString().slice(0,10)}
+function formatDate(v){let p=v.split('-');return `${p[2]}/${p[1]}/${p[0]}`}
+function parseDate(v){let p=v.split('/');return new Date(+p[2],+p[1]-1,+p[0])}
+function formatDateShort(d){ let dt=new Date(d); return dt.getDate()+'/'+(dt.getMonth()+1)+'/'+dt.getFullYear(); }
+function toast(s){let t=document.getElementById('toast');t.textContent=s;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),1600)}
+function openModal(id){document.getElementById(id).classList.add('active')}
+function closeModal(id){document.getElementById(id).classList.remove('active')}
+function save(){localStorage.setItem('jobReports',JSON.stringify(reports));localStorage.setItem('jobTasks',JSON.stringify(assignedTasks));localStorage.setItem('jobEmployees',JSON.stringify(employees));localStorage.setItem('jobGoals',JSON.stringify(goals))}
+
+function init(){
+ reports=JSON.parse(localStorage.getItem('jobReports')||'null')||clone(SAMPLE_REPORTS);
+ assignedTasks=JSON.parse(localStorage.getItem('jobTasks')||'null')||clone(SAMPLE_TASKS);
+ employees=JSON.parse(localStorage.getItem('jobEmployees')||'null')||[];
+ let storedGoals=JSON.parse(localStorage.getItem('jobGoals')||'null');
+ if(storedGoals){
+   if(Array.isArray(storedGoals) && storedGoals.length>0 && typeof storedGoals[0]==='string'){
+     goals=storedGoals.map(t=>({text:t, createdAt:new Date().toISOString(), visible:true}));
+   } else {
+     goals=storedGoals;
+   }
+ } else {
+   goals=clone(SAMPLE_GOALS);
+ }
+ employees=[...new Set([...employees,...reports.map(r=>r.employee),...assignedTasks.map(t=>t.forEmployee)])];
+ document.getElementById('inputDate').value=todayInput();
+ renderAll(); updateLogin(); populateWorkloadFilters();
+}
+
+function resetSample(){if(!confirm('Tạo lại dữ liệu mẫu?'))return;reports=clone(SAMPLE_REPORTS);assignedTasks=clone(SAMPLE_TASKS);employees=[...new Set(reports.map(r=>r.employee))];goals=clone(SAMPLE_GOALS);save();renderAll();toast('✅ Đã tạo lại dữ liệu mẫu')}
+
+function renderAll(){
+  populateEmployeeControls();
+  populateFilters();
+  renderTable('reportBody');
+  renderTable('fullReportBody');
+  renderTasks();
+  renderComments();
+  renderGoals();
+  renderStats();
+  renderHighlightComments();
+  populateWorkloadFilters();
+}
+
+// Thêm báo cáo mới (Độ khó mặc định là 'C (Trung bình)' hoặc để trống nếu nhập tay bình thường)
+function addReport(){
+  let emp=document.getElementById('inputEmployee').value;
+  let dateVal=document.getElementById('inputDate').value;
+  let task=document.getElementById('inputTask').value.trim();
+  let employeeComment=document.getElementById('inputEmployeeComment').value.trim();
+  let isDaily=document.getElementById('inputDaily').checked;
+  if(!emp||!dateVal||!task){alert('Vui lòng chọn nhân viên, ngày và nhập tên công việc!');return;}
+  let formattedDate=formatDate(dateVal);
+  let newId=reports.length>0?Math.max(...reports.map(r=>r.id))+1:1;
+  reports.unshift({
+    id:newId,
+    employee:emp,
+    date:formattedDate,
+    task:task,
+    difficulty:'C (Trung bình)', // Mặc định cơ bản, không tự gán bừa từ nơi khác
+    status:'Đang làm',
+    isDaily:isDaily,
+    employeeComment:employeeComment,
+    managerComment:'',
+    bonusPoints:0,
+    bonusReason:''
+  });
+  save(); renderAll();
+  document.getElementById('inputTask').value='';
+  document.getElementById('inputEmployeeComment').value='';
+  document.getElementById('inputDaily').checked=false;
+  toast('✅ Đã gửi báo cáo thành công!');
+}
+
+function populateEmployeeControls(){
+  let opts='<option value="">-- Chọn nhân viên --</option>';
+  employees.forEach(e=>{opts+=`<option value="${esc(e)}">${esc(e)}</option>`;});
+  document.getElementById('inputEmployee').innerHTML=opts;
+
+  let fOpts='<option value="ALL">👤 Tất cả NV</option>';
+  employees.forEach(e=>{fOpts+=`<option value="${esc(e)}">${esc(e)}</option>`;});
+  document.getElementById('filterEmployee').innerHTML=fOpts;
+}
+
+function populateFilters(){
+  let weeks=[...new Set(reports.map(r=>week(r.date)))].sort().reverse();
+  let wOpts='<option value="ALL">📅 Tất cả tuần</option>';
+  weeks.forEach(w=>{wOpts+=`<option value="${w}">${w}</option>`;});
+  let selW=document.getElementById('filterWeek').value;
+  document.getElementById('filterWeek').innerHTML=wOpts;
+  document.getElementById('filterWeek').value=weeks.includes(selW)?selW:'ALL';
+
+  let months=[...new Set(reports.map(r=>month(r.date)))].sort().reverse();
+  let mOpts='<option value="ALL">📅 Tất cả tháng</option>';
+  months.forEach(m=>{mOpts+=`<option value="${m}">${m}</option>`;});
+  let selM=document.getElementById('filterMonth').value;
+  document.getElementById('filterMonth').innerHTML=mOpts;
+  document.getElementById('filterMonth').value=months.includes(selM)?selM:'ALL';
+}
+
+function getFilteredReports(){
+  let fEmp=document.getElementById('filterEmployee').value;
+  let fWeek=document.getElementById('filterWeek').value;
+  let fMonth=document.getElementById('filterMonth').value;
+  let fFrom=document.getElementById('filterDateFrom').value;
+  let fTo=document.getElementById('filterDateTo').value;
+  let fStatus=document.getElementById('filterStatus').value;
+  let fDaily=document.getElementById('filterDaily').value;
+
+  return reports.filter(r=>{
+    if(fEmp!=='ALL' && r.employee!==fEmp) return false;
+    if(fWeek!=='ALL' && week(r.date)!==fWeek) return false;
+    if(fMonth!=='ALL' && month(r.date)!==fMonth) return false;
+    if(fFrom && parseDate(r.date)<new Date(fFrom)) return false;
+    if(fTo && parseDate(r.date)>new Date(fTo)) return false;
+    if(fStatus!=='ALL' && r.status!==fStatus) return false;
+    if(fDaily==='DAILY' && !r.isDaily) return false;
+    if(fDaily==='NODAILY' && r.isDaily) return false;
+    return true;
+  });
+}
+
+function renderTable(bodyId){
+  let data=getFilteredReports();
+  let html='';
+  data.forEach((r, idx)=>{
+    let dKey=keyDiff(r.difficulty);
+    let totalScore=score(r);
+    let statusClass=r.status==='Hoàn thành'?'status-done':'status-working';
+    let empClassIndex=employees.indexOf(r.employee)%8;
+    let empClass=`name-${empClassIndex>=0?empClassIndex:0}`;
+    let noCommentClass=(!r.managerComment || r.managerComment.trim()==='')?'no-comment-row':'';
+
+    html+=`<tr class="${noCommentClass}" onclick="openEdit(${r.id})">
+      <td>${idx+1}</td>
+      <td class="emp-name ${empClass}">${esc(r.employee)}</td>
+      <td>${esc(r.date)}</td>
+      <td>${week(r.date)}</td>
+      <td class="task-cell" title="${esc(r.task)}">${esc(r.task)}</td>
+      <td><span class="diff ${dKey}">${esc(r.difficulty)}</span></td>
+      <td><span class="score-main">${totalScore}</span>${r.bonusPoints?`<span class="score-bonus">(+${r.bonusPoints})</span>`:''}</td>
+      <td><span class="status-select ${statusClass}">${esc(r.status)}</span></td>
+      <td>${r.isDaily?'🔄':''}</td>
+      <td class="comment-cell" title="${esc(r.employeeComment)}">${esc(r.employeeComment)}</td>
+      <td class="comment-cell" title="${esc(r.managerComment)}">${esc(r.managerComment)}</td>
+      <td><button class="btn btn-sm btn-primary" onclick="event.stopPropagation();openEdit(${r.id})">Sửa</button></td>
+    </tr>`;
+  });
+  document.getElementById(bodyId).innerHTML=html||`<tr><td colspan="12" class="empty">Không có dữ liệu báo cáo</td></tr>`;
+  if(bodyId==='reportBody'){
+    document.getElementById('rowCount').textContent=`(Hiển thị ${data.length}/${reports.length} dòng)`;
+  }
+}
+
+function clearFilters(){
+  document.getElementById('filterEmployee').value='ALL';
+  document.getElementById('filterWeek').value='ALL';
+  document.getElementById('filterMonth').value='ALL';
+  document.getElementById('filterDateFrom').value='';
+  document.getElementById('filterDateTo').value='';
+  document.getElementById('filterStatus').value='ALL';
+  document.getElementById('filterDaily').value='ALL';
+  renderAll();
+}
+
+function renderStats(){
+  let done=reports.filter(r=>r.status==='Hoàn thành').length;
+  let working=reports.filter(r=>r.status==='Đang làm').length;
+  document.getElementById('doneCount').textContent=done;
+  document.getElementById('workingCount').textContent=working;
+  document.getElementById('employeeCount').textContent=employees.length;
+}
+
+function quickStatus(status){
+  document.getElementById('filterStatus').value=status;
+  renderAll();
+}
+
+function openEmployees(){
+  renderEmployeeModalList();
+  openModal('employeeModal');
+}
+
+function renderEmployeeModalList(){
+  let html=`<table><thead><tr><th>STT</th><th>Tên nhân viên</th><th>Thao tác</th></tr></thead><tbody>`;
+  employees.forEach((e, i)=>{
+    html+=`<tr><td>${i+1}</td><td class="emp-name">${esc(e)}</td><td><button class="btn btn-sm btn-danger" onclick="deleteEmployee('${esc(e)}')">Xóa</button></td></tr>`;
+  });
+  html+=`</tbody></table>`;
+  document.getElementById('employeeList').innerHTML=html;
+}
+
+function addEmployee(){
+  let name=document.getElementById('employeeAddName').value.trim();
+  if(!name){alert('Vui lòng nhập tên nhân viên!');return;}
+  if(employees.includes(name)){alert('Nhân viên này đã tồn tại!');return;}
+  employees.push(name);
+  save(); renderAll(); renderEmployeeModalList();
+  document.getElementById('employeeAddName').value='';
+  toast('✅ Đã thêm nhân viên mới');
+}
+
+function deleteEmployee(name){
+  if(!confirm(`Bạn có chắc muốn xóa nhân viên ${name}?`)) return;
+  employees=employees.filter(e=>e!==name);
+  save(); renderAll(); renderEmployeeModalList();
+  toast('🗑️ Đã xóa nhân viên');
+}
+
+// Quản lý Giao việc
+function renderTasks(){
+  let html='';
+  assignedTasks.forEach(t=>{
+    html+=`<div class="task-item">
+      <div class="task-info">
+        <div class="task-title">${esc(t.task)}</div>
+        <div class="task-meta">Độ khó: <span class="diff ${keyDiff(t.difficulty)}">${esc(t.difficulty)}</span></div>
+      </div>
+      <button class="btn btn-success btn-sm" onclick="openReceiveModal(${t.id})">Nhận</button>
+    </div>`;
+  });
+  document.getElementById('taskList').innerHTML=html||`<div class="empty" style="padding:10px">Không có việc giao</div>`;
+}
+
+function addAssignedTask(){
+  let task=document.getElementById('newTask').value.trim();
+  let diff=document.getElementById('newDiff').value;
+  if(!task){alert('Nhập tên công việc cần giao!');return;}
+  let newId=assignedTasks.length>0?Math.max(...assignedTasks.map(t=>t.id))+1:101;
+  assignedTasks.push({id:newId, task:task, difficulty:diff, forEmployee:''});
+  save(); renderTasks();
+  document.getElementById('newTask').value='';
+  toast('➕ Đã thêm việc vào danh sách giao');
+}
+
+function openReceiveModal(taskId){
+  receivingTaskId=taskId;
+  let taskObj=assignedTasks.find(t=>t.id===taskId);
+  if(!taskObj) return;
+  document.getElementById('receiveTaskInfo').textContent=`Công việc: ${taskObj.task} (${taskObj.difficulty})`;
+  
+  let sugHtml='';
+  employees.forEach(e=>{
+    sugHtml+=`<div class="suggest" onclick="selectReceiveEmp('${esc(e)}')">${esc(e)}</div>`;
+  });
+  document.getElementById('employeeSuggestions').innerHTML=sugHtml||'<span class="small">Chưa có nhân viên nào</span>';
+  document.getElementById('receiveEmployee').value='';
+  openModal('receiveModal');
+}
+
+function selectReceiveEmp(name){
+  document.getElementById('receiveEmployee').value=name;
+}
+
+function addEmployeeFromReceive(){
+  let name=document.getElementById('newEmployeeName').value.trim();
+  if(!name) return;
+  if(!employees.includes(name)){
+    employees.push(name);
+    save(); populateEmployeeControls();
+  }
+  document.getElementById('receiveEmployee').value=name;
+  document.getElementById('newEmployeeName').value='';
+  openReceiveModal(receivingTaskId);
+}
+
+function confirmReceive(){
+  let emp=document.getElementById('receiveEmployee').value;
+  if(!emp){alert('Vui lòng chọn người nhận việc!');return;}
+  let taskObj=assignedTasks.find(t=>t.id===receivingTaskId);
+  if(!taskObj) return;
+
+  let newId=reports.length>0?Math.max(...reports.map(r=>r.id))+1:1;
+  reports.unshift({
+    id:newId,
+    employee:emp,
+    date:formatDate(todayInput()),
+    task:taskObj.task,
+    difficulty:taskObj.difficulty,
+    status:'Đang làm',
+    isDaily:false,
+    employeeComment:'',
+    managerComment:'',
+    bonusPoints:0,
+    bonusReason:''
+  });
+
+  assignedTasks=assignedTasks.filter(t=>t.id!==receivingTaskId);
+  save(); renderAll(); closeModal('receiveModal');
+  toast('✅ Đã nhận việc và tạo báo cáo');
+}
+
+// Chỉnh sửa báo cáo
+function openEdit(id){
+  let r=reports.find(item=>item.id===id);
+  if(!r) return;
+  document.getElementById('editId').value=r.id;
+  document.getElementById('editEmployee').value=r.employee;
+  document.getElementById('editTaskName').value=r.task;
+  document.getElementById('editDate').value=dateInput(r.date);
+  document.getElementById('editStatus').value=r.status;
+  
+  let diffSelect=document.getElementById('editDifficulty');
+  diffSelect.value=r.difficulty;
+  // Chỉ người hướng dẫn mới được sửa độ khó
+  diffSelect.disabled = !loggedIn;
+
+  document.getElementById('editBonusPoints').value=r.bonusPoints||0;
+  document.getElementById('editBonusReason').value=r.bonusReason||'';
+  document.getElementById('editDaily').checked=r.isDaily;
+  document.getElementById('editEmployeeComment').value=r.employeeComment||'';
+  document.getElementById('editManagerComment').value=r.managerComment||'';
+
+  let permBadge=document.getElementById('managerEditPermission');
+  let hint=document.getElementById('managerCommentHint');
+  let mgrCommentInput=document.getElementById('editManagerComment');
+  let bonusInput=document.getElementById('editBonusPoints');
+  let bonusReasonInput=document.getElementById('editBonusReason');
+
+  if(loggedIn){
+    permBadge.textContent='Đã đăng nhập (Quyền Quản lý)';
+    permBadge.className='permission-badge admin';
+    mgrCommentInput.disabled=false;
+    bonusInput.disabled=false;
+    bonusReasonInput.disabled=false;
+    hint.textContent='Bạn có toàn quyền chỉnh sửa nhận xét, điểm thưởng và độ khó.';
+  } else {
+    permBadge.textContent='Chưa đăng nhập (Chỉ xem)';
+    permBadge.className='permission-badge';
+    mgrCommentInput.disabled=true;
+    bonusInput.disabled=true;
+    bonusReasonInput.disabled=true;
+    hint.textContent='Đăng nhập tài khoản người hướng dẫn để chỉnh sửa mục này.';
+  }
+
+  openModal('editModal');
+}
+
+function saveEdit(){
+  let id=Number(document.getElementById('editId').value);
+  let r=reports.find(item=>item.id===id);
+  if(!r) return;
+
+  r.employee=document.getElementById('editEmployee').value;
+  r.task=document.getElementById('editTaskName').value;
+  r.status=document.getElementById('editStatus').value;
+  
+  if(loggedIn){
+    r.difficulty=document.getElementById('editDifficulty').value;
+    r.bonusPoints=Number(document.getElementById('editBonusPoints').value)||0;
+    r.bonusReason=document.getElementById('editBonusReason').value;
+    r.managerComment=document.getElementById('editManagerComment').value;
+  }
+
+  r.isDaily=document.getElementById('editDaily').checked;
+  r.employeeComment=document.getElementById('editEmployeeComment').value;
+
+  save(); renderAll(); closeModal('editModal');
+  toast('💾 Đã lưu thay đổi công việc');
+}
+
+function deleteCurrent(){
+  let id=Number(document.getElementById('editId').value);
+  if(!confirm('Bạn có chắc muốn xóa công việc này?')) return;
+  reports=reports.filter(r=>r.id!==id);
+  save(); renderAll(); closeModal('editModal');
+  toast('🗑️ Đã xóa công việc');
+}
+
+// Mục tiêu tuần
+function renderGoals(){
+  let html='';
+  let activeGoals=goals.filter(g=>g.visible!==false);
+  let hiddenGoals=goals.filter(g=>g.visible===false);
+
+  activeGoals.forEach((g, idx)=>{
+    let dtStr=new Date(g.createdAt).toLocaleDateString();
+    html+=`<div class="goal">
+      <div class="goal-text">${esc(g.text)} <span class="goal-meta">(${dtStr})</span></div>
+      <div class="goal-controls">
+        ${loggedIn?`<label><input type="checkbox" onclick="toggleGoalVisibility(${goals.indexOf(g)}, false)"> Ẩn</label><button class="btn btn-sm btn-danger" onclick="deleteGoal(${goals.indexOf(g)})" style="padding:1px 5px">x</button>`:''}
+      </div>
+    </div>`;
+  });
+
+  if(hiddenGoals.length>0){
+    html+=`<div class="hidden-goals-wrapper">
+      <span class="hidden-goals-toggle" onclick="toggleHiddenGoalsList()">📂 Mục tiêu ẩn (${hiddenGoals.length})</span>
+      <div id="hiddenGoalsList" class="hidden-goals-list">`;
+    hiddenGoals.forEach(g=>{
+      let dtStr=new Date(g.createdAt).toLocaleDateString();
+      html+=`<div class="goal hidden-goal">
+        <div class="goal-text">${esc(g.text)} <span class="goal-meta">(${dtStr})</span></div>
+        <div class="goal-controls">
+          ${loggedIn?`<label><input type="checkbox" checked onclick="toggleGoalVisibility(${goals.indexOf(g)}, true)"> Hiện</label><button class="btn btn-sm btn-danger" onclick="deleteGoal(${goals.indexOf(g)})" style="padding:1px 5px">x</button>`:''}
+        </div>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  }
+
+  document.getElementById('goals').innerHTML=html||`<div class="empty" style="padding:10px">Chưa có mục tiêu tuần</div>`;
+  document.getElementById('goalEditor').style.display=loggedIn?'block':'none';
+}
+
+function toggleHiddenGoalsList(){
+  let list=document.getElementById('hiddenGoalsList');
+  if(list) list.classList.toggle('open');
+}
+
+function addGoal(){
+  let text=document.getElementById('goalInput').value.trim();
+  if(!text){alert('Nhập nội dung mục tiêu!');return;}
+  goals.push({text:text, createdAt:new Date().toISOString(), visible:true});
+  save(); renderGoals();
+  document.getElementById('goalInput').value='';
+  toast('🎯 Đã thêm mục tiêu');
+}
+
+function toggleGoalVisibility(index, visibleState){
+  goals[index].visible=visibleState;
+  save(); renderGoals();
+}
+
+function deleteGoal(index){
+  goals.splice(index,1);
+  save(); renderGoals();
+  toast('🗑️ Đã xóa mục tiêu');
+}
+
+// Nhận xét của người hướng dẫn & Điểm thưởng
+function renderComments(){
+  let data=reports.filter(r=>r.managerComment && r.managerComment.trim()!=='');
+  let html='';
+  data.forEach(r=>{
+    html+=`<div class="manager-comment-item" onclick="openEdit(${r.id})">
+      <strong>${esc(r.employee)}</strong> <span class="comment-date">(${esc(r.date)})</span>
+      <div>${esc(r.managerComment)}</div>
+    </div>`;
+  });
+  document.getElementById('managerComments').innerHTML=`<div class="manager-comment-list">${html||'<div class="empty">Chưa có comment nào</div>'}</div>`;
+}
+
+function renderHighlightComments(){
+  let data=reports.filter(r=>Number(r.bonusPoints)>0).sort((a,b)=>b.bonusPoints-a.bonusPoints);
+  let html='';
+  data.forEach(r=>{
+    html+=`<div class="hc-item" onclick="openEdit(${r.id})" style="cursor:pointer">
+      <div class="hc-title">${esc(r.employee)} (+${r.bonusPoints}đ) — ${esc(r.task)}</div>
+      <div class="hc-meta">Lý do: ${esc(r.bonusReason||'Không có')} (${esc(r.date)})</div>
+    </div>`;
+  });
+  document.getElementById('highlightComments').innerHTML=`<div style="max-height:340px;overflow-y:auto">${html||'<div class="empty">Chưa có điểm thưởng nổi bật</div>'}</div>`;
+}
+
+// Đăng nhập
+function toggleLogin(){
+  if(loggedIn){
+    loggedIn=false;
+    updateLogin();
+    renderAll();
+    toast('🔒 Đã đăng xuất');
+  } else {
+    document.getElementById('password').value='';
+    document.getElementById('loginError').textContent='';
+    openModal('loginModal');
+  }
+}
+
+function doLogin(){
+  let pass=document.getElementById('password').value;
+  if(pass===ADMIN_PASSWORD){
+    loggedIn=true;
+    closeModal('loginModal');
+    updateLogin();
+    renderAll();
+    toast('🔓 Đăng nhập quản lý thành công!');
+  } else {
+    document.getElementById('loginError').textContent='Mật khẩu không chính xác!';
+  }
+}
+
+function updateLogin(){
+  let btn=document.getElementById('loginBtn');
+  let assignForm=document.getElementById('assignForm');
+  if(loggedIn){
+    btn.textContent='🔓 Đăng xuất';
+    btn.className='btn btn-danger';
+    if(assignForm) assignForm.style.display='block';
+  } else {
+    btn.textContent='🔒 Đăng nhập';
+    btn.className='btn';
+    if(assignForm) assignForm.style.display='none';
+  }
+}
+
+// Thống kê khối lượng công việc (Đã làm modal co giãn phù hợp, bỏ kích thước cố định)
+function openWorkload(){
+  renderWorkload();
+  openModal('workloadModal');
+}
+
+function populateWorkloadFilters(){
+  let weeks=[...new Set(reports.map(r=>week(r.date)))].sort().reverse();
+  let wOpts='<option value="ALL">Tất cả</option>';
+  weeks.forEach(w=>{wOpts+=`<option value="${w}">${w}</option>`;});
+  let elW=document.getElementById('workloadWeek');
+  if(elW){
+    let sel=elW.value;
+    elW.innerHTML=wOpts;
+    elW.value=weeks.includes(sel)?sel:'ALL';
+  }
+
+  let months=[...new Set(reports.map(r=>month(r.date)))].sort().reverse();
+  let mOpts='<option value="ALL">Tất cả</option>';
+  months.forEach(m=>{mOpts+=`<option value="${m}">${m}</option>`;});
+  let elM=document.getElementById('workloadMonth');
+  if(elM){
+    let selM=elM.value;
+    elM.innerHTML=mOpts;
+    elM.value=months.includes(selM)?selM:'ALL';
+  }
+}
+
+function clearWorkloadFilters(){
+  let w=document.getElementById('workloadWeek'); if(w) w.value='ALL';
+  let m=document.getElementById('workloadMonth'); if(m) m.value='ALL';
+  let f=document.getElementById('workloadFrom'); if(f) f.value='';
+  let t=document.getElementById('workloadTo'); if(t) t.value='';
+  renderWorkload();
+}
+
+function getWorkloadFilteredReports(){
+  let wWeek=document.getElementById('workloadWeek')?.value || 'ALL';
+  let wMonth=document.getElementById('workloadMonth')?.value || 'ALL';
+  let wFrom=document.getElementById('workloadFrom')?.value || '';
+  let wTo=document.getElementById('workloadTo')?.value || '';
+
+  return reports.filter(r=>{
+    if(wWeek!=='ALL' && week(r.date)!==wWeek) return false;
+    if(wMonth!=='ALL' && month(r.date)!==wMonth) return false;
+    if(wFrom && parseDate(r.date)<new Date(wFrom)) return false;
+    if(wTo && parseDate(r.date)>new Date(wTo)) return false;
+    return true;
+  });
+}
+
+let activeWorkloadDiffFilter='ALL';
+function filterWorkload(diff){
+  activeWorkloadDiffFilter=activeWorkloadDiffFilter===diff?'ALL':diff;
+  renderWorkload();
+}
+
+function renderWorkload(){
+  let data=getWorkloadFilteredReports();
+  let counts={A:0, B:0, C:0, D:0};
+  data.forEach(r=>{
+    let d=keyDiff(r.difficulty);
+    if(counts[d]!==undefined) counts[d]++;
+  });
+
+  document.getElementById('countA').textContent=counts.A;
+  document.getElementById('countB').textContent=counts.B;
+  document.getElementById('countC').textContent=counts.C;
+  document.getElementById('countD').textContent=counts.D;
+
+  // Highlight active stat button
+  document.querySelectorAll('.stat-btn').forEach(btn=>{
+    btn.classList.remove('active');
+    if(btn.classList.contains(activeWorkloadDiffFilter)){
+      btn.classList.add('active');
+    }
+  });
+
+  // Group by employee for chart
+  let empMap={};
+  employees.forEach(e=>{ empMap[e]={A:0, B:0, C:0, D:0, total:0}; });
+  data.forEach(r=>{
+    if(!empMap[r.employee]){
+      empMap[r.employee]={A:0, B:0, C:0, D:0, total:0};
+    }
+    let d=keyDiff(r.difficulty);
+    if(empMap[r.employee][d]!==undefined){
+      empMap[r.employee][d]++;
+      empMap[r.employee].total++;
+    }
+  });
+
+  let chartHtml='';
+  let maxTotal=Math.max(...Object.values(empMap).map(o=>o.total), 1);
+
+  Object.keys(empMap).forEach(emp=>{
+    let obj=empMap[emp];
+    if(activeWorkloadDiffFilter!=='ALL' && obj[activeWorkloadDiffFilter]===0) return;
+
+    let pA=(obj.A/maxTotal)*100;
+    let pB=(obj.B/maxTotal)*100;
+    let pC=(obj.C/maxTotal)*100;
+    let pD=(obj.D/maxTotal)*100;
+
+    chartHtml+=`<div class="chart-row" onclick="openWorkloadDetail('${esc(emp)}')">
+      <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(emp)}">${esc(emp)}</div>
+      <div class="bar">
+        <div class="segA" style="width:${pA}%" title="A: ${obj.A}"></div>
+        <div class="segB" style="width:${pB}%" title="B: ${obj.B}"></div>
+        <div class="segC" style="width:${pC}%" title="C: ${obj.C}"></div>
+        <div class="segD" style="width:${pD}%" title="D: ${obj.D}"></div>
+      </div>
+      <div class="chart-num">${obj.total} việc</div>
+    </div>`;
+  });
+
+  document.getElementById('workloadChart').innerHTML=chartHtml||`<div class="empty">Không có dữ liệu thống kê phù hợp</div>`;
+  document.getElementById('workloadDetail').innerHTML='';
+}
+
+function openWorkloadDetail(empName){
+  let data=getWorkloadFilteredReports().filter(r=>{
+    if(r.employee!==empName) return false;
+    if(activeWorkloadDiffFilter!=='ALL' && keyDiff(r.difficulty)!==activeWorkloadDiffFilter) return false;
+    return true;
+  });
+
+  document.getElementById('workloadDetailTitle').textContent=`Chi tiết công việc của: ${empName} ${activeWorkloadDiffFilter!=='ALL'?'(Độ khó: '+activeWorkloadDiffFilter+')':''}`;
+  let html='';
+  data.forEach((r, idx)=>{
+    let dKey=keyDiff(r.difficulty);
+    let statusClass=r.status==='Hoàn thành'?'status-done':'status-working';
+    html+=`<tr>
+      <td>${idx+1}</td>
+      <td class="emp-name">${esc(r.employee)}</td>
+      <td>${esc(r.date)}</td>
+      <td class="task-cell">${esc(r.task)}</td>
+      <td><span class="diff ${dKey}">${esc(r.difficulty)}</span></td>
+      <td><span class="status-select ${statusClass}">${esc(r.status)}</span></td>
+      <td class="comment-cell">${esc(r.employeeComment)}</td>
+    </tr>`;
+  });
+  document.getElementById('workloadDetailBody').innerHTML=html||`<tr><td colspan="7" class="empty">Không có dữ liệu chi tiết</td></tr>`;
+  openModal('workloadDetailModal');
+}
+
+function openTableFullscreen(){
+  openModal('tableModal');
+}
+
+function openHelp(){
+  openModal('helpModal');
+}
+
+window.onload=init;
+</script>
+</body>
+</html>
